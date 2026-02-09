@@ -42,6 +42,7 @@ PandaWiki Admin 是一个基于现代前端技术栈构建的管理后台，用�
      # 目标服务配置
      TARGET=http://your_target_ip:8000 # 后端服务地址
      STATIC_FILE_TARGET=https://your_static_file_ip:2443 # 静态文件服务地址
+     SHARE_TARGET=http://your_share_ip:8000 # 分享页服务地址
 
      # 开发相关
      DEV_KB_ID=your_dev_kb_id # 开发环境知识库ID

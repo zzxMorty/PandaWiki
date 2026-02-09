@@ -34,7 +34,7 @@ PandaWiki 是一个基于 Next.js 的 Wiki 知识库系统，支持文档管理�
      ```env
      # 目标服务配置
      TARGET=http://your_target_ip:8000 # 后端服务地址
-     STATIC_FILE_TARGET=https://your_static_file_ip:2443 # 静态文件服务地址
+     STATIC_FILE_TARGET=http://your_target_ip:8000 # 静态文件服务地址
 
      # 开发相关
      DEV_KB_ID=your_dev_kb_id # 开发环境知识库ID

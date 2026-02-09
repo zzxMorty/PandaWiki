@@ -32,6 +32,13 @@ go run ./cmd/api       # 启动 API，监听 8000
 ./scripts/local-dev.sh
 ```
 
+或使用脚本（启动/停止 后端 + 前端）：
+
+```bash
+./scripts/dev-start.sh
+./scripts/dev-stop.sh
+```
+
 ## 3. 前端
 
 为本地开发准备好示例文件 `web/app/.env.local.example` 和 `web/admin/.env.local.example`。
