@@ -25,7 +25,11 @@ PandaWiki 是一个基于 Next.js 的 Wiki 知识库系统，支持文档管理�
    pnpm install
    ```
 3. 配置环境变量：
-   - 在项目根目录下，新建文件 `.env.local` , 根据需求修改环境变量，实际字段如下：
+   - 在本目录下复制 `.env.local.example` 为 `.env.local`，根据需求修改环境变量，实际字段如下：
+
+     ```bash
+     cp .env.local.example .env.local
+     ```
 
      ```env
      # 目标服务配置

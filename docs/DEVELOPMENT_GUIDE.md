@@ -104,7 +104,14 @@ cd .. # 返回项目根目录
 
 ### 5.1 环境变量
 
-已为本地开发准备好 `web/app/.env.local` 和 `web/admin/.env.local` 文件，其中 `TARGET=http://localhost:8000`。
+仓库提供了示例文件 `web/app/.env.local.example` 与 `web/admin/.env.local.example`。
+
+在启动前端前，请先复制生成本地环境变量文件：
+
+```bash
+cp web/app/.env.local.example web/app/.env.local
+cp web/admin/.env.local.example web/admin/.env.local
+```
 
 ### 5.2 安装依赖与运行
 

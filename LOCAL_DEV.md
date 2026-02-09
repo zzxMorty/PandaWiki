@@ -34,7 +34,14 @@ go run ./cmd/api       # 启动 API，监听 8000
 
 ## 3. 前端
 
-已为本地开发准备好 `web/app/.env.local` 和 `web/admin/.env.local`（TARGET=http://localhost:8000）。
+为本地开发准备好示例文件 `web/app/.env.local.example` 和 `web/admin/.env.local.example`。
+
+你需要先复制生成本地环境变量文件：
+
+```bash
+cp web/app/.env.local.example web/app/.env.local
+cp web/admin/.env.local.example web/admin/.env.local
+```
 
 ```bash
 cd web
