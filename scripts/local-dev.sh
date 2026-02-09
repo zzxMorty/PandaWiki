@@ -50,6 +50,7 @@ else
 fi
 
 echo ""
-echo "前端: 在另一终端执行: cd $ROOT/web && pnpm install && pnpm dev"
+echo "前端: 需要手动在另一终端执行: cd $ROOT/web/admin && pnpm install && pnpm dev"
+echo "前端: 需要手动在另一终端执行: cd $ROOT/web/app && pnpm install && pnpm dev"
 echo "停止 API: kill $API_PID"
 echo "完成"
