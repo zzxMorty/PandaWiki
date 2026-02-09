@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	machineIDFile  = "/data/.machine_id"
+	machineIDFile  = "/tmp/.panda_wiki_machine_id"
 	reportInterval = time.Hour
 )
 

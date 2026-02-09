@@ -44,6 +44,18 @@ git checkout -b feat/your-feature-name
 - 重要交互逻辑应有测试
 - 运行 `npm test` 来执行测试
 
+## 使用 repo2txt 生成项目快照
+
+若需要将整个代码库导出为单一大文本文件（用于 LLM 上下文、RAG 数据源或代码分析），可在项目根目录执行：
+
+```bash
+./scripts/repo2txt.sh
+```
+
+- 输出文件：`build/repo_dump.txt`（已加入 `.gitignore`，不会提交）
+- 首次运行会自动克隆 [repo2txt](https://github.com/pde-rent/repo2txt) 到 `build/tools/repo2txt`
+- 依赖：`git`、`python3`
+
 ## 其他指南
 
 - 提交消息应清晰且有意义

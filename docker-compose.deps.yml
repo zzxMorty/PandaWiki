@@ -1,0 +1,71 @@
+# PandaWiki 本地开发依赖服务
+# 前端、后端在宿主机本地运行，以下组件用 Docker 运行
+# 使用: docker compose -f docker-compose.deps.yml up -d
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: panda-wiki-postgres
+    environment:
+      POSTGRES_USER: panda-wiki
+      POSTGRES_PASSWORD: panda-wiki-secret
+      POSTGRES_DB: panda-wiki
+    ports:
+      - "5432:5432"
+    volumes:
+      - panda-wiki-pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U panda-wiki -d panda-wiki"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  nats:
+    image: nats:2-alpine
+    container_name: panda-wiki-nats
+    command: ["-js", "-m", "8222"]
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8222/healthz"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: panda-wiki-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - panda-wiki-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    container_name: panda-wiki-minio
+    command: server /data
+    environment:
+      MINIO_ROOT_USER: s3panda-wiki
+      MINIO_ROOT_PASSWORD: panda-wiki-s3-secret
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - panda-wiki-minio-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  panda-wiki-pg-data:
+  panda-wiki-redis-data:
+  panda-wiki-minio-data:

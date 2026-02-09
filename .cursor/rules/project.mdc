@@ -1,0 +1,59 @@
+---
+description: PandaWiki 项目概览与开发约定
+globs:
+alwaysApply: true
+---
+
+# PandaWiki 项目
+
+## 项目简介
+
+PandaWiki 是一款 AI 大模型驱动的**开源知识库搭建系统**，用于构建产品文档、技术文档、FAQ、博客等，提供 AI 创作、AI 问答、AI 搜索能力。
+
+- **仓库**: chaitin/PandaWiki
+- **许可证**: AGPL-3.0
+
+## 运行时模型（本地开发）
+
+- **前端、后端**：本地运行（Go 直接跑，pnpm dev）
+- **其他组件**：Docker 运行（PostgreSQL、NATS、Redis、MinIO 等）
+- 启动依赖服务：`docker compose -f docker-compose.deps.yml up -d`
+- 后端通过环境变量或 config.yml 指向 localhost 各端口
+
+## 安装与依赖偏好
+
+优先使用以下工具安装语言或依赖：
+
+- **brew**：系统级包管理
+- **mise**：多语言版本管理（Go、Node 等）
+- **uv**：Python 包管理
+- **pnpm**：前端包管理（本仓库前端禁止使用 npm/yarn）
+
+## 技术栈与结构
+
+| 部分 | 技术 | 说明 |
+|------|------|------|
+| 后端 | Go 1.24+ | backend/，API、领域逻辑、存储、消息队列等 |
+| 前端 | React 19, Next.js, pnpm monorepo | web/，admin 管理端 + app 用户端 |
+| SDK | Go | sdk/rag/，RAG 相关客户端 |
+| 脚本 | Python | pageIndex/，页面索引等 |
+
+后端读取配置：当前工作目录或 `./config` 下的 `config.yml`；敏感项可通过环境变量覆盖（见 config 包 `overrideWithEnv`）。
+
+## 关键路径
+
+- 后端入口：`backend/cmd/`，配置：`backend/config/`
+- 前端根配置：`web/package.json`，管理端 `web/admin/`，用户端 `web/app/`
+- 项目结构说明：根目录 `PROJECT_STRUCTURE.md`
+
+## 开发与规范
+
+- Go：gofmt、effective go，函数建议 &lt;80 行；测试 `make test`（在 backend 目录）
+- 前端：ESLint、Prettier，包管理仅用 pnpm；`pnpm dev` 并行跑 admin + app
+- 后端本地运行前：复制 `backend/config.example.yml` 为 `config.yml`，用 localhost 或环境变量指向 Docker 依赖
+- 前端本地：在 `web/app` 或 `web` 根目录配置 `.env.local`（TARGET、STATIC_FILE_TARGET、DEV_KB_ID 等），见 `web/app/README.md`
+
+## 文档与贡献
+
+- 贡献流程与代码风格：`CONTRIBUTING.md`
+- 生成代码库快照（LLM/RAG）：`./scripts/repo2txt.sh` → `build/repo_dump.txt`

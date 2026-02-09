@@ -64,6 +64,14 @@ func NewEcho(
 
 	e.Binder = &MyBinder{}
 
+	// 健康检查 / 根路径，便于本地验证服务已启动
+	e.GET("/", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, map[string]string{"status": "ok", "service": "panda-wiki-api"})
+	})
+	e.GET("/health", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, map[string]string{"status": "ok"})
+	})
+
 	if os.Getenv("ENV") == "local" {
 		e.Debug = true
 		e.GET("/swagger/*", echoSwagger.WrapHandler)

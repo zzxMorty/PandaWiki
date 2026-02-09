@@ -64,7 +64,7 @@ func doMigrate(dsn string) error {
 		return fmt.Errorf("with instance failed: %w", err)
 	}
 	m, err := migrate.NewWithDatabaseInstance(
-		"file://migration",
+		"file://store/pg/migration",
 		"postgres", driver)
 	if err != nil {
 		return fmt.Errorf("new with database instance failed: %w", err)
