@@ -49,6 +49,7 @@ func (u *KnowledgeBaseUsecase) CreateKnowledgeBase(ctx context.Context, req *dom
 	if err != nil {
 		return "", err
 	}
+	createdInVectorStore := true
 	kbID := uuid.New().String()
 	kb := &domain.KnowledgeBase{
 		ID:        kbID,
@@ -64,6 +65,9 @@ func (u *KnowledgeBaseUsecase) CreateKnowledgeBase(ctx context.Context, req *dom
 	}
 
 	if err := u.repo.CreateKnowledgeBase(ctx, req.MaxKB, kb); err != nil {
+		if createdInVectorStore {
+			_ = u.rag.DeleteKnowledgeBase(ctx, datasetID)
+		}
 		return "", err
 	}
 	return kbID, nil
@@ -133,11 +137,15 @@ func (u *KnowledgeBaseUsecase) GetKnowledgeBasePerm(ctx context.Context, kbID st
 }
 
 func (u *KnowledgeBaseUsecase) DeleteKnowledgeBase(ctx context.Context, kbID string) error {
+	kb, err := u.repo.GetKnowledgeBaseByID(ctx, kbID)
+	if err != nil {
+		return err
+	}
 	if err := u.repo.DeleteKnowledgeBase(ctx, kbID); err != nil {
 		return err
 	}
 	// delete vector store
-	if err := u.rag.DeleteKnowledgeBase(ctx, kbID); err != nil {
+	if err := u.rag.DeleteKnowledgeBase(ctx, kb.DatasetID); err != nil {
 		return err
 	}
 	if err := u.kbCache.DeleteKB(ctx, kbID); err != nil {

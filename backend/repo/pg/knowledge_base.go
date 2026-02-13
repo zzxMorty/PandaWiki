@@ -10,6 +10,8 @@ import (
 	"maps"
 	"net"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
@@ -58,6 +60,10 @@ func (r *KnowledgeBaseRepository) SyncKBAccessSettingsToCaddy(ctx context.Contex
 	if len(kbList) == 0 {
 		return nil
 	}
+	socketPath := r.config.CaddyAPI
+	if socketPath == "" || socketPath == "disabled" {
+		return nil
+	}
 	firstKB := kbList[0]
 	firstHost := ""
 	if len(firstKB.AccessSettings.Hosts) > 0 {
@@ -92,7 +98,7 @@ func (r *KnowledgeBaseRepository) SyncKBAccessSettingsToCaddy(ctx context.Contex
 			})
 		}
 	}
-	socketPath := r.config.CaddyAPI
+	// socketPath already loaded above
 	// sync kb to caddy
 	// create server for each port
 	subnetPrefix := r.config.SubnetPrefix
@@ -297,16 +303,30 @@ func (r *KnowledgeBaseRepository) SyncKBAccessSettingsToCaddy(ctx context.Contex
 		"apps": apps,
 	}
 	newBody, _ := json.Marshal(config)
-	tr := &http.Transport{
-		DialContext: func(_ context.Context, _, _ string) (net.Conn, error) {
-			return net.Dial("unix", socketPath)
-		},
+	var (
+		client *http.Client
+		urlStr string
+	)
+	if strings.HasPrefix(socketPath, "http://") || strings.HasPrefix(socketPath, "https://") {
+		client = &http.Client{Timeout: 5 * time.Second}
+		urlStr = strings.TrimSuffix(socketPath, "/") + "/load"
+	} else {
+		if _, err := os.Stat(socketPath); err != nil {
+			return fmt.Errorf("failed to stat caddy api socket: %w", err)
+		}
+		tr := &http.Transport{
+			DialContext: func(_ context.Context, _, _ string) (net.Conn, error) {
+				return net.Dial("unix", socketPath)
+			},
+		}
+		client = &http.Client{
+			Transport: tr,
+			Timeout:   5 * time.Second,
+		}
+		urlStr = "http://unix/load"
 	}
-	client := &http.Client{
-		Transport: tr,
-		Timeout:   5 * time.Second,
-	}
-	req, err := http.NewRequest("POST", "http://unix/load", bytes.NewBuffer(newBody))
+
+	req, err := http.NewRequest("POST", urlStr, bytes.NewBuffer(newBody))
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
@@ -344,7 +364,7 @@ func (r *KnowledgeBaseRepository) CreateKnowledgeBase(ctx context.Context, maxKB
 			return err
 		}
 		if len(kbs) > maxKB {
-			return errors.New("kb is too many")
+			return domain.ErrMaxKnowledgeBaseLimitReached
 		}
 
 		if err := r.checkUniquePortHost(kbs); err != nil {

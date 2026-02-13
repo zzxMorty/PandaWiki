@@ -24,7 +24,7 @@ type BaseEditionLimitation struct {
 }
 
 var baseEditionLimitationDefault = BaseEditionLimitation{
-	MaxKb:    1,
+	MaxKb:    10,
 	MaxAdmin: 1,
 	MaxNode:  300,
 }

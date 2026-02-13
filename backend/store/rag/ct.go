@@ -2,7 +2,9 @@ package rag
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net"
 	"strings"
 
 	"github.com/JohannesKaufmann/html-to-markdown/v2/converter"
@@ -15,6 +17,17 @@ import (
 	"github.com/chaitin/panda-wiki/log"
 	"github.com/chaitin/panda-wiki/utils"
 )
+
+func mapCTRAGError(err error) error {
+	if err == nil {
+		return nil
+	}
+	var opErr *net.OpError
+	if errors.As(err, &opErr) {
+		return domain.ErrRAGServiceUnavailable
+	}
+	return err
+}
 
 type CTRAG struct {
 	client *raglite.Client
@@ -42,7 +55,7 @@ func (s *CTRAG) CreateKnowledgeBase(ctx context.Context) (string, error) {
 		Name: uuid.New().String(),
 	})
 	if err != nil {
-		return "", err
+		return "", mapCTRAGError(err)
 	}
 	return dataset.ID, nil
 }

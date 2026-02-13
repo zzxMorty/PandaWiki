@@ -15,3 +15,7 @@ var ErrPermissionDenied = errors.New("permission denied")
 var ErrInternalServerError = errors.New("internal server error")
 
 var ErrMaxNodeLimitReached = errors.New("max node limit reached")
+
+var ErrMaxKnowledgeBaseLimitReached = errors.New("max knowledge base limit reached")
+
+var ErrRAGServiceUnavailable = errors.New("rag service unavailable")

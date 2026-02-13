@@ -98,6 +98,12 @@ func (h *KnowledgeBaseHandler) CreateKnowledgeBase(c echo.Context) error {
 		if errors.Is(err, domain.ErrPortHostAlreadyExists) {
 			return h.NewResponseWithError(c, "端口或域名已被其他知识库占用", nil)
 		}
+		if errors.Is(err, domain.ErrMaxKnowledgeBaseLimitReached) {
+			return h.NewResponseWithError(c, "知识库数量已达上限", nil)
+		}
+		if errors.Is(err, domain.ErrRAGServiceUnavailable) {
+			return h.NewResponseWithError(c, "RAG 服务不可用：请检查是否已启动向量库服务及 rag.base_url 配置", nil)
+		}
 		if errors.Is(err, domain.ErrSyncCaddyConfigFailed) {
 			return h.NewResponseWithError(c, "端口可能已被其他程序占用，请检查", nil)
 		}
