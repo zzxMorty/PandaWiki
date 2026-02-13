@@ -193,6 +193,9 @@ func overrideWithEnv(c *Config) {
 	if env := os.Getenv("RAG_CT_RAG_BASE_URL"); env != "" {
 		c.RAG.CTRAG.BaseURL = env
 	}
+	if env := os.Getenv("RAG_CT_RAG_API_KEY"); env != "" {
+		c.RAG.CTRAG.APIKey = env
+	}
 	// redis
 	if env := os.Getenv("REDIS_ADDR"); env != "" {
 		c.Redis.Addr = env

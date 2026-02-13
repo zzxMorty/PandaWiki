@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"sync"
 	"time"
 
@@ -38,6 +39,20 @@ const (
 	UrlExportPath      = "/api/docs/url/export"
 	TaskListPath       = "/api/tasks/list"
 )
+
+func getCrawlerServiceHost() string {
+	if env := os.Getenv("ANYDOC_CRAWLER_BASE_URL"); env != "" {
+		return env
+	}
+	return crawlerServiceHost
+}
+
+func getAPIUploaderURL() string {
+	if env := os.Getenv("ANYDOC_UPLOADER_URL"); env != "" {
+		return env
+	}
+	return apiUploaderUrl
+}
 
 type Status string
 
@@ -74,7 +89,7 @@ func NewClient(logger *log.Logger, mqConsumer mq.MQConsumer) (*Client, error) {
 
 func (c *Client) GetUrlList(ctx context.Context, targetURL, id string) (*ListDocResponse, error) {
 
-	u, err := url.Parse(crawlerServiceHost)
+	u, err := url.Parse(getCrawlerServiceHost())
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +129,7 @@ func (c *Client) GetUrlList(ctx context.Context, targetURL, id string) (*ListDoc
 
 func (c *Client) UrlExport(ctx context.Context, id, docID, kbId string) (*UrlExportRes, error) {
 
-	u, err := url.Parse(crawlerServiceHost)
+	u, err := url.Parse(getCrawlerServiceHost())
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +142,7 @@ func (c *Client) UrlExport(ctx context.Context, id, docID, kbId string) (*UrlExp
 		"uploader": map[string]interface{}{
 			"type": uploaderTypeHTTP,
 			"http": map[string]interface{}{
-				"url": apiUploaderUrl,
+				"url": getAPIUploaderURL(),
 			},
 			"dir": fmt.Sprintf("/%s", kbId),
 		},
@@ -270,7 +285,7 @@ func (c *Client) handleTaskExportEvent(ctx context.Context, msg types.Message) e
 }
 
 func (c *Client) TaskList(ctx context.Context, ids []string) (*TaskRes, error) {
-	u, err := url.Parse(crawlerServiceHost)
+	u, err := url.Parse(getCrawlerServiceHost())
 	if err != nil {
 		return nil, err
 	}
@@ -316,7 +331,7 @@ func (c *Client) TaskList(ctx context.Context, ids []string) (*TaskRes, error) {
 }
 
 func (c *Client) DownloadDoc(ctx context.Context, filepath string) ([]byte, error) {
-	u, err := url.Parse(crawlerServiceHost)
+	u, err := url.Parse(getCrawlerServiceHost())
 	if err != nil {
 		return nil, err
 	}

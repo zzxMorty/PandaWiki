@@ -5,6 +5,13 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PID_DIR="$ROOT/.panda-dev"
 LOG_DIR="$PID_DIR/logs"
 
+if [[ -f "$ROOT/.env" ]]; then
+  set -a
+  # shellcheck disable=SC1090
+  source "$ROOT/.env"
+  set +a
+fi
+
 usage() {
   cat <<'EOF'
 Usage:
@@ -160,6 +167,9 @@ if [[ "$START_BACKEND" -eq 1 ]]; then
     if ! go build -o /tmp/panda-wiki-api ./cmd/api 2>/dev/null; then
       go build -o /tmp/panda-wiki-api ./cmd/api
     fi
+    if ! go build -o /tmp/panda-wiki-consumer ./cmd/consumer 2>/dev/null; then
+      go build -o /tmp/panda-wiki-consumer ./cmd/consumer
+    fi
   )
 
   echo "[backend] migrate..."
@@ -169,6 +179,7 @@ if [[ "$START_BACKEND" -eq 1 ]]; then
   )
 
   start_cmd "backend" bash -lc "cd '$ROOT/backend' && exec /tmp/panda-wiki-api"
+  start_cmd "consumer" bash -lc "cd '$ROOT/backend' && exec /tmp/panda-wiki-consumer"
 fi
 
 ensure_env_local() {

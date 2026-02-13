@@ -20,11 +20,13 @@ EOF
 STOP_BACKEND=0
 STOP_ADMIN=0
 STOP_APP=0
+STOP_CONSUMER=0
 
 if [[ $# -eq 0 ]]; then
   STOP_BACKEND=1
   STOP_ADMIN=1
   STOP_APP=1
+  STOP_CONSUMER=1
 fi
 
 while [[ $# -gt 0 ]]; do
@@ -33,9 +35,13 @@ while [[ $# -gt 0 ]]; do
       STOP_BACKEND=1
       STOP_ADMIN=1
       STOP_APP=1
+      STOP_CONSUMER=1
       ;;
     --backend)
       STOP_BACKEND=1
+      ;;
+    --consumer)
+      STOP_CONSUMER=1
       ;;
     --admin)
       STOP_ADMIN=1
@@ -175,4 +181,8 @@ if [[ "$STOP_BACKEND" -eq 1 ]]; then
   if ! stop_by_pidfile "backend"; then
     stop_by_port "backend" 8000
   fi
+fi
+
+if [[ "$STOP_CONSUMER" -eq 1 ]]; then
+  stop_by_pidfile "consumer" || true
 fi

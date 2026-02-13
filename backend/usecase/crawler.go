@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
+	"os"
 	"slices"
 
 	"github.com/google/uuid"
@@ -52,7 +53,11 @@ func (u *CrawlerUsecase) ParseUrl(ctx context.Context, req *v1.CrawlerParseReq) 
 
 	// 文件类型的解析会先走上传接口
 	if req.CrawlerSource.Type() == consts.CrawlerSourceTypeFile {
-		req.Key = fmt.Sprintf("http://panda-wiki-minio:9000/static-file/%s", req.Key)
+		baseURL := os.Getenv("ANYDOC_FILE_BASE_URL")
+		if baseURL == "" {
+			baseURL = "http://panda-wiki-minio:9000"
+		}
+		req.Key = fmt.Sprintf("%s/static-file/%s", baseURL, req.Key)
 	}
 
 	var (
