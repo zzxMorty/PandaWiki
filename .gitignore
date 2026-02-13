@@ -26,6 +26,9 @@ go.work.sum
 # env file
 .env
 
+# local dev state
+.panda-dev/
+
 # 本地后端配置（勿提交，使用 config.example.yml 复制为 config.yml）
 backend/config.yml
 backend/config/config.yml
